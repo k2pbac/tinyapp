@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
 const {generateRandomString} = require("./generateRandomString");
+const utf8 = require("utf8");
 
 app.use(express.urlencoded({
   extended: true
@@ -31,9 +32,13 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);  // Log the POST request body to the console
-  res.send("Ok");    
-  
+
+  const {longURL} = req.body;
+  const shortURL = generateRandomString();
+
+  urlDatabase[shortURL] = longURL;
+  console.log(urlDatabase);
+  res.redirect("urls");
 });
 
 

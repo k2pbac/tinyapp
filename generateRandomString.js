@@ -1,21 +1,9 @@
 function generateRandomString() {
-  let randomString = "";
-  let check = true;
-  for (let i = 0; i < 6; i++) {
-    randomString+= String.fromCharCode(i);
-    if(check) {
-      randomString += String.fromCharCode(Math.random() * (91 - 65) + 65);
-      check = false;
-    }
-    else {
-    randomString += String.fromCharCode(Math.random() * (123 - 97) + 97);
-    check = true;
-    }
-  }
-  return randomString;
+  return ((Math.random() + 1).toString(36).substring(7)).split('')
+  .map((el, index) => typeof el === 'string' && index % 2 !== 0 ? el.toUpperCase() : el).join('');
 }
-
 
 module.exports = {
   generateRandomString
 }
+
