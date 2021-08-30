@@ -19,8 +19,10 @@
   "homepage": "https://github.com/k2pbac/tinyapp#readme",
   "dependencies": {
     "body-parser": "^1.19.0",
+    "connect-flash": "^0.1.1",
     "ejs": "^3.1.6",
     "express": "^4.17.1",
-    "utf8": "^3.0.0"
+    "express-session": "^1.17.2",
+    "flash": "^1.1.0"
   }
 }
