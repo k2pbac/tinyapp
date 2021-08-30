@@ -15,6 +15,7 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+//Get route for home page
 app.get("/", (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render('urls_index', templateVars);
@@ -26,12 +27,12 @@ app.get("/urls", (req, res) => {
 });
 
 
+// Get and Post routes for a new url 
 app.get("/urls/new", (req, res) => {
   res.render('urls_new');
 });
 
 app.post("/urls", (req, res) => {
-
   const {longURL} = req.body;
   const shortURL = generateRandomString();
 
@@ -41,18 +42,29 @@ app.post("/urls", (req, res) => {
 });
 
 
-app.get("/urls/:shortURL", (req, res) => {
-
+//get route for short url page
+app.get("/urls/:shortURL", (req, res, next) => {
   const { shortURL } = req.params;
+  if(Object.prototype.hasOwnProperty.call(urlDatabase, shortURL)) {
   const longURL = urlDatabase[shortURL]
-
   res.render('urls_show', {shortURL, longURL});
+  }
+  next()
 });
 
-
-app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL]
+//get route for long url redirect from short url page
+app.get("/u/:shortURL", (req, res, next) => {
+  const {shortURL} = req.params;
+  if(Object.prototype.hasOwnProperty.call(urlDatabase, shortURL)) {
+  const longURL = urlDatabase[shortURL]
   res.redirect(longURL);
+  }
+  next()
+});
+
+app.get('*', (req, res) => {
+
+  res.send("sorry page doesn't exist");
 });
 
 app.listen(PORT, () => {
