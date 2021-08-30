@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
-
+const {generateRandomString} = require("./generateRandomString");
 
 app.use(express.urlencoded({
   extended: true
@@ -15,7 +15,8 @@ const urlDatabase = {
 };
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  const templateVars = { urls: urlDatabase };
+  res.render('urls_index', templateVars);
 });
 
 app.get("/urls", (req, res) => {
@@ -30,7 +31,8 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-
+  console.log(req.body);  // Log the POST request body to the console
+  res.send("Ok");    
   
 });
 
