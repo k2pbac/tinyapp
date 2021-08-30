@@ -59,16 +59,17 @@ app.get("/urls/new", (req, res) => {
 
 app.post("/urls", (req, res) => {
   const { longURL } = req.body;
+
   if (longURL !== "") {
     const shortURL = generateRandomString();
 
     urlDatabase[shortURL] = longURL;
     req.flash("success", "Successfully Inserted a new URL!");
     res.redirect("urls");
+  } else {
+    req.flash("error", "Incorrect or empty URL, nothing created!");
+    res.redirect("urls/new");
   }
-
-  req.flash("error", "Incorrect or empty URL, nothing created!");
-  res.redirect("urls/new");
 });
 
 //get route for short url page
