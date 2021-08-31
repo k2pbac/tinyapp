@@ -4,6 +4,7 @@ const PORT = 8080; // default port 8080
 const { generateRandomString } = require("./generateRandomString");
 const flash = require("connect-flash");
 const session = require("express-session");
+const e = require("connect-flash");
 
 app.use(
   express.urlencoded({
@@ -65,7 +66,7 @@ app.post("/urls", (req, res) => {
 
     urlDatabase[shortURL] = longURL;
     req.flash("success", "Successfully Inserted a new URL!");
-    res.redirect("urls");
+    res.redirect(`urls/${shortURL}`);
   } else {
     req.flash("error", "Incorrect or empty URL, nothing created!");
     res.redirect("urls/new");
@@ -78,18 +79,21 @@ app.get("/urls/:shortURL", (req, res, next) => {
   if (Object.prototype.hasOwnProperty.call(urlDatabase, shortURL)) {
     const longURL = urlDatabase[shortURL];
     res.render("urls_show", { shortURL, longURL });
+  } else {
+    next();
   }
-  next();
 });
 
 //get route for long url redirect from short url page
-app.get("/u/:shortURL", (req, res, next) => {
+app.get("/u/:shortURL", (req, res) => {
   const { shortURL } = req.params;
   if (Object.prototype.hasOwnProperty.call(urlDatabase, shortURL)) {
     const longURL = urlDatabase[shortURL];
+    console.log("redirecting to", longURL);
     res.redirect(longURL);
+  } else {
+    next();
   }
-  next();
 });
 
 app.get("*", (req, res) => {
