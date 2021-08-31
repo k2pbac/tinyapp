@@ -66,7 +66,7 @@ app.post("/urls", (req, res) => {
 
     urlDatabase[shortURL] = longURL;
     req.flash("success", "Successfully Inserted a new URL!");
-    res.redirect(`urls/${shortURL}`);
+    res.status(200).redirect(`urls/${shortURL}`);
   } else {
     req.flash("error", "Incorrect or empty URL, nothing created!");
     res.redirect("urls/new");
@@ -78,19 +78,19 @@ app.get("/urls/:shortURL", (req, res, next) => {
   const { shortURL } = req.params;
   if (Object.prototype.hasOwnProperty.call(urlDatabase, shortURL)) {
     const longURL = urlDatabase[shortURL];
-    res.render("urls_show", { shortURL, longURL });
+    res.status(200).render("urls_show", { shortURL, longURL });
   } else {
     next();
   }
 });
 
 //get route for long url redirect from short url page
-app.get("/u/:shortURL", (req, res) => {
+app.get("/u/:shortURL", (req, res, next) => {
   const { shortURL } = req.params;
   if (Object.prototype.hasOwnProperty.call(urlDatabase, shortURL)) {
     const longURL = urlDatabase[shortURL];
     console.log("redirecting to", longURL);
-    res.redirect(longURL);
+    res.status(301).redirect(longURL);
   } else {
     next();
   }
@@ -98,7 +98,7 @@ app.get("/u/:shortURL", (req, res) => {
 
 app.get("*", (req, res) => {
   req.flash("error", "Sorry, page was not found!");
-  res.redirect("/");
+  res.status(404).redirect("/");
 });
 
 app.listen(PORT, () => {
