@@ -12,7 +12,7 @@
   </head>
 
   <body>
-    <%- include('./partials/_header') %>
+    <%- include('./partials/_header') %> <%- include('./partials/flash')%>
     <div class="card text-center">
       <div class="card-header"></div>
       <div class="card-body">
@@ -20,13 +20,20 @@
         <p class="card-text">
           Short URL: <a href="/u/<%= shortURL %>"><%= shortURL %></a>
         </p>
-      </div> 
+      </div>
       <div class="card-footer text-muted">
-        <form method="GET" action="/urls/<%= shortURL %>/edit"></form>
-                <button type="submit" class="btn btn-primary">
-                  Edit
-                </button>
-              </form>
+        <h2>Edit</h2>
+        <form method="POST" action="/urls/<%= shortURL %>">
+          <label for="">New URL:</label>
+          <input
+            name="updatedURL"
+            style="width: 20%"
+            value="<%= longURL %>"
+            type="input"
+            placeholder="URL"
+          />
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
       </div>
     </div>
     <!-- Bootstrap JS -->
