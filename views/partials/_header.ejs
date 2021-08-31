@@ -25,7 +25,10 @@
         <button type="submit" class="btn btn-outline-dark">Login</button>
       </form>
       <% } else { %>
-      <h3>Welcome <%= username %></h3>
+      <form method="POST" action="/logout">
+        <h5 class="d-inline pr-2">Welcome <%= username %></h5>
+        <button type="submit" class="btn btn-outline-dark">Logout</button>
+      </form>
       <% } %>
     </div>
   </nav>
