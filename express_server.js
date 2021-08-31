@@ -4,13 +4,14 @@ const PORT = 8080; // default port 8080
 const { generateRandomString } = require("./generateRandomString");
 const flash = require("connect-flash");
 const session = require("express-session");
-const e = require("connect-flash");
+var cookieParser = require("cookie-parser");
 
 app.use(
   express.urlencoded({
     extended: true,
   })
 );
+app.use(cookieParser());
 app.set("view engine", "ejs");
 
 //Create a session config and call both flash and session to use methods
@@ -22,7 +23,6 @@ const sessionConfig = {
   saveUninitialized: true,
   cookie: {
     httpOnly: true,
-    // secure: true,
     expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
     maxAge: 1000 * 60 * 60 * 24 * 7,
   },
@@ -34,6 +34,11 @@ app.use(session(sessionConfig));
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
+  // if (req.session.username) {
+  //   res.locals.username = req.session.username;
+  // } else {
+  //   res.locals.username = "";
+  // }
   next();
 });
 
@@ -44,12 +49,15 @@ const urlDatabase = {
 
 //Get route for home page
 app.get("/", (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const templateVars = { urls: urlDatabase, username: req.cookies.username };
+  console.log(req.cookies.username);
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const templateVars = { urls: urlDatabase, username: req.cookies.username };
+  console.log(req.cookies.username);
+
   res.render("urls_index", templateVars);
 });
 
@@ -89,10 +97,73 @@ app.get("/u/:shortURL", (req, res, next) => {
   const { shortURL } = req.params;
   if (Object.prototype.hasOwnProperty.call(urlDatabase, shortURL)) {
     const longURL = urlDatabase[shortURL];
-    console.log("redirecting to", longURL);
     res.status(301).redirect(longURL);
   } else {
     next();
+  }
+});
+
+app.post("/urls/:shortURL/delete", (req, res) => {
+  const { shortURL } = req.params;
+  if (Object.prototype.hasOwnProperty.call(urlDatabase, shortURL)) {
+    delete urlDatabase[shortURL];
+    req.flash("success", `You have successfully deleted the URL`);
+    res.redirect("/");
+  } else {
+    req.flash("error", "Sorry there is no item with that url to delete!");
+    res.redirect("/");
+  }
+});
+
+app.get("/urls/:shortURL/edit", (req, res) => {
+  const { shortURL } = req.params;
+  if (Object.prototype.hasOwnProperty.call(urlDatabase, shortURL)) {
+    res.redirect(`/urls/${shortURL}`);
+  } else {
+    req.flash("error", "Sorry that URL doesn't exist!");
+    res.redirect("/");
+  }
+});
+
+app.post("/urls/:shortURL", (req, res) => {
+  const { shortURL } = req.params;
+  const { updatedURL } = req.body;
+  if (Object.prototype.hasOwnProperty.call(urlDatabase, shortURL)) {
+    urlDatabase[shortURL] = updatedURL;
+    req.flash("success", "Updated url successfully!");
+    res.redirect(`/urls/${shortURL}`);
+  } else {
+    req.flash("error", "Sorry there is no item with that url to update!");
+    res.redirect("/");
+  }
+});
+
+app.post("/login", (req, res) => {
+  const { username } = req.body;
+  if (!username.length) {
+    req.flash("error", "Please enter a valid username");
+    res.redirect("/urls");
+  } else {
+    req.flash("success", "You have succesfully logged in!");
+    // req.session.username = username;
+    res.cookie("username", username);
+    res.redirect("/urls");
+  }
+});
+
+app.post("/logout", (req, res) => {
+  // if (req.session.username) {
+  //   req.session.username = "";
+  //   req.flash("success", "Successfully logged out!");
+  //   res.redirect("/");
+  // }
+  if (req.cookies.username) {
+    res.clearCookie("username");
+    req.flash("success", "Successfully logged out!");
+    res.redirect("/");
+  } else {
+    req.flash("error", "Sorry you are not logged in!");
+    res.redirect("/");
   }
 });
 
