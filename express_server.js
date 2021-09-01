@@ -136,14 +136,19 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  const { username } = req.body;
-  if (!username.length) {
-    req.flash("error", "Please enter a valid username");
+  const { email, password } = req.body;
+  const values = Object.values(users);
+
+  if (
+    values.filter((x) => x["email"] === email && x["password"] === password)
+      .length
+  ) {
+    req.flash("success", "You have succesfully logged in!");
+    res.cookie("username", email);
     res.redirect("/urls");
   } else {
-    req.flash("success", "You have succesfully logged in!");
-    res.cookie("username", username);
-    res.redirect("/urls");
+    req.flash("error", "Please enter a valid username and/or password");
+    res.redirect("/login");
   }
 });
 
