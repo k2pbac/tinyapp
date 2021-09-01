@@ -1,14 +1,17 @@
 const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
-const { generateRandomString } = require("./generateRandomString");
 const flash = require("connect-flash");
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
 const { urlDatabase } = require("./seeds/urlSeeds");
 const { users } = require("./seeds/userSeeds");
 const { v4: uuidv4 } = require("uuid");
-const { userExists, authenticateUser } = require("./middleware");
+const {
+  userExists,
+  authenticateUser,
+  generateRandomString,
+} = require("./middleware");
 app.use(
   express.urlencoded({
     extended: true,
@@ -173,7 +176,7 @@ app.post("/register", (req, res) => {
     users[id] = { id, email, password };
     res.cookie("username", email);
     res.cookie("user_id", id);
-    req.flash("success", "Welcome to tinyURL, you are now registered!");
+    req.flash("success", "Welcome to TinyApp, you are now registered!");
     res.redirect("/urls");
   } else {
     req.flash("error", "A user with this email already exists.");
