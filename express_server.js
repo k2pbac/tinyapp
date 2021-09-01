@@ -12,6 +12,7 @@ const {
   authenticateUser,
   generateRandomString,
   isLoggedIn,
+  urlsForUser,
 } = require("./middleware");
 const e = require("connect-flash");
 app.use(
@@ -44,8 +45,8 @@ app.use((req, res, next) => {
 
 app.use((req, res, next) => {
   if (
-    req.originalUrl === "/urls" ||
-    (req.originalUrl === "/" && !isLoggedIn(req.cookies.username))
+    (req.originalUrl === "/urls" || req.originalUrl === "/") &&
+    !isLoggedIn(req.cookies.username)
   ) {
     req.flash("error", "You must be logged in to view urls");
     res.redirect("/login");
@@ -74,15 +75,13 @@ app.use((req, res, next) => {
 
 //Get route for home page
 app.get("/", (req, res) => {
-  const templateVars = {
-    urls: urlDatabase,
-  };
-  res.render("urls_index", templateVars);
+  res.redirect("/urls");
 });
 
 app.get("/urls", (req, res) => {
+  const filteredUrls = urlsForUser(req.cookies.userID);
   const templateVars = {
-    urls: urlDatabase,
+    urls: filteredUrls,
   };
   res.render("urls_index", templateVars);
 });
@@ -101,7 +100,6 @@ app.post("/urls", (req, res) => {
         longURL,
         userID: req.cookies.userID,
       };
-      console.log(urlDatabase);
       req.flash("success", "Successfully Inserted a new URL!");
       res.status(200).redirect(`urls/${shortURL}`);
     } else {

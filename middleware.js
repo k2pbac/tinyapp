@@ -1,4 +1,5 @@
 const { users } = require("./seeds/userSeeds");
+const { urlDatabase } = require("./seeds/urlSeeds");
 const values = Object.values(users);
 
 const userExists = (email) => {
@@ -25,6 +26,17 @@ const isLoggedIn = (user) => {
   return false;
 };
 
+const urlsForUser = (id) => {
+  const finalURLs = {};
+  const urls = Object.entries(urlDatabase)
+    .filter((x) => x[1].userID === id)
+    .map(
+      (el) =>
+        (finalURLs[el[0]] = { longURL: el[1].longURL, userID: el[1].userID })
+    );
+  return finalURLs;
+};
+
 const generateRandomString = () => {
   return (Math.random() + 1)
     .toString(36)
@@ -41,4 +53,5 @@ module.exports = {
   authenticateUser,
   generateRandomString,
   isLoggedIn,
+  urlsForUser,
 };
