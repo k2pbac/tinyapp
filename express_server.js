@@ -43,7 +43,16 @@ app.use((req, res, next) => {
 });
 
 app.use((req, res, next) => {
-  if (req.originalUrl === "/urls/new" && !isLoggedIn(req.cookies.username)) {
+  if (
+    req.originalUrl === "/urls" ||
+    (req.originalUrl === "/" && !isLoggedIn(req.cookies.username))
+  ) {
+    req.flash("error", "You must be logged in to view urls");
+    res.redirect("/login");
+  } else if (
+    req.originalUrl === "/urls/new" &&
+    !isLoggedIn(req.cookies.username)
+  ) {
     req.flash("error", "You must be logged in to create a url");
     res.redirect("/login");
   } else if (
@@ -54,8 +63,7 @@ app.use((req, res, next) => {
     res.redirect("/login");
   } else if (
     req.originalUrl.includes("edit") &&
-    !isLoggedIn(req.cookies.username) &&
-    req.method === "POST"
+    !isLoggedIn(req.cookies.username)
   ) {
     req.flash("error", "You must be logged in to edit a url");
     res.redirect("/login");
