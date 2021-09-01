@@ -145,7 +145,7 @@ app.post("/login", (req, res) => {
     res.redirect("/urls");
   } else {
     req.flash("error", "Please enter a valid username and/or password");
-    res.redirect("/login");
+    res.redirect("back");
   }
 });
 
