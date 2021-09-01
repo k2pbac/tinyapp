@@ -20,10 +20,14 @@
     </div>
     <div>
       <% if (!username ) {%>
-      <form method="POST" action="/login">
+      <!-- <form method="POST" action="/login">
         <input type="text" name="username" placeholder="Username" />
         <button type="submit" class="btn btn-outline-dark">Login</button>
-      </form>
+      </form> -->
+      <div>
+        <button class="btn btn-dark mr-2">Login</button>
+        <button class="btn btn-dark">Register</button>
+      </div>
       <% } else { %>
       <form method="POST" action="/logout">
         <h5 class="d-inline pr-2">Logged in as: <%= username %></h5>
