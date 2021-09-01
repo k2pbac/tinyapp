@@ -4,7 +4,7 @@ const PORT = 8080; // default port 8080
 const { generateRandomString } = require("./generateRandomString");
 const flash = require("connect-flash");
 const session = require("express-session");
-var cookieParser = require("cookie-parser");
+const cookieParser = require("cookie-parser");
 
 app.use(
   express.urlencoded({
@@ -34,6 +34,8 @@ app.use(session(sessionConfig));
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
+  res.cookie("username", "");
+  res.locals.username = req.cookies.username;
   // if (req.session.username) {
   //   res.locals.username = req.session.username;
   // } else {
@@ -49,21 +51,22 @@ const urlDatabase = {
 
 //Get route for home page
 app.get("/", (req, res) => {
-  const templateVars = { urls: urlDatabase, username: req.cookies.username };
-  console.log(req.cookies.username);
+  const templateVars = {
+    urls: urlDatabase,
+  };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, username: req.cookies.username };
-  console.log(req.cookies.username);
-
+  const templateVars = {
+    urls: urlDatabase,
+  };
   res.render("urls_index", templateVars);
 });
 
 // Get and Post routes for a new url
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  res.render("urls_new", { username: req.cookies.username });
 });
 
 app.post("/urls", (req, res) => {
@@ -86,7 +89,10 @@ app.get("/urls/:shortURL", (req, res, next) => {
   const { shortURL } = req.params;
   if (Object.prototype.hasOwnProperty.call(urlDatabase, shortURL)) {
     const longURL = urlDatabase[shortURL];
-    res.status(200).render("urls_show", { shortURL, longURL });
+    res.status(200).render("urls_show", {
+      shortURL,
+      longURL,
+    });
   } else {
     next();
   }
@@ -138,6 +144,10 @@ app.post("/urls/:shortURL", (req, res) => {
   }
 });
 
+app.get("/login", (req, res) => {
+  res.render("urls_login");
+});
+
 app.post("/login", (req, res) => {
   const { username } = req.body;
   if (!username.length) {
@@ -165,6 +175,10 @@ app.post("/logout", (req, res) => {
     req.flash("error", "Sorry you are not logged in!");
     res.redirect("/");
   }
+});
+
+app.get("/register", (req, res) => {
+  res.render("urls_register");
 });
 
 app.get("*", (req, res) => {
