@@ -13,7 +13,7 @@ app.use(
 );
 app.use(cookieParser());
 app.set("view engine", "ejs");
-
+app.use(express.static("public"));
 //Create a session config and call both flash and session to use methods
 const secret = process.env.SECRET || "thisshouldbeabettersecret!";
 const sessionConfig = {
