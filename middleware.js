@@ -18,6 +18,13 @@ const authenticateUser = (email, password) => {
   return undefined;
 };
 
+const isLoggedIn = (user) => {
+  if (user) {
+    return true;
+  }
+  return false;
+};
+
 const generateRandomString = () => {
   return (Math.random() + 1)
     .toString(36)
@@ -33,4 +40,5 @@ module.exports = {
   userExists,
   authenticateUser,
   generateRandomString,
+  isLoggedIn,
 };

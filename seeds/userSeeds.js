@@ -10,7 +10,7 @@ const users = {
     password: "dishwasher-funk",
   },
   user3RandomID: {
-    id: "user3RandomID",
+    id: "aJ48lW",
     email: "krisbachan123@hotmail.com",
     password: "admin",
   },

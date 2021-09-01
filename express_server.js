@@ -11,7 +11,9 @@ const {
   userExists,
   authenticateUser,
   generateRandomString,
+  isLoggedIn,
 } = require("./middleware");
+const e = require("connect-flash");
 app.use(
   express.urlencoded({
     extended: true,
@@ -36,7 +38,30 @@ app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
   res.locals.username = req.cookies.username;
+  res.locals.userID = req.cookies.userID;
   next();
+});
+
+app.use((req, res, next) => {
+  if (req.originalUrl === "/urls/new" && !isLoggedIn(req.cookies.username)) {
+    req.flash("error", "You must be logged in to create a url");
+    res.redirect("/login");
+  } else if (
+    req.originalUrl.includes("delete") &&
+    !isLoggedIn(req.cookies.username)
+  ) {
+    req.flash("error", "You must be logged in to delete a url");
+    res.redirect("/login");
+  } else if (
+    req.originalUrl.includes("edit") &&
+    !isLoggedIn(req.cookies.username) &&
+    req.method === "POST"
+  ) {
+    req.flash("error", "You must be logged in to edit a url");
+    res.redirect("/login");
+  } else {
+    next();
+  }
 });
 
 //Get route for home page
@@ -61,16 +86,19 @@ app.get("/urls/new", (req, res) => {
 
 app.post("/urls", (req, res) => {
   const { longURL } = req.body;
+  if (isLoggedIn(req.cookies.username)) {
+    if (longURL !== "") {
+      const shortURL = generateRandomString();
 
-  if (longURL !== "") {
-    const shortURL = generateRandomString();
-
-    urlDatabase[shortURL] = longURL;
-    req.flash("success", "Successfully Inserted a new URL!");
-    res.status(200).redirect(`urls/${shortURL}`);
+      urlDatabase[shortURL] = longURL;
+      req.flash("success", "Successfully Inserted a new URL!");
+      res.status(200).redirect(`urls/${shortURL}`);
+    } else {
+      req.flash("error", "Incorrect or empty URL, nothing created!");
+      res.redirect("urls/new");
+    }
   } else {
-    req.flash("error", "Incorrect or empty URL, nothing created!");
-    res.redirect("urls/new");
+    res.redirect("/login");
   }
 });
 
@@ -78,7 +106,7 @@ app.post("/urls", (req, res) => {
 app.get("/urls/:shortURL", (req, res, next) => {
   const { shortURL } = req.params;
   if (Object.prototype.hasOwnProperty.call(urlDatabase, shortURL)) {
-    const longURL = urlDatabase[shortURL];
+    const longURL = urlDatabase[shortURL].longURL;
     res.status(200).render("urls_show", {
       shortURL,
       longURL,
@@ -144,7 +172,7 @@ app.post("/login", (req, res) => {
   if (user) {
     req.flash("success", "You have succesfully logged in!");
     res.cookie("username", email);
-    res.cookie("user_id", user.id);
+    res.cookie("userID", user.id);
     res.redirect("/urls");
   } else {
     req.flash("error", "Please enter a valid username and/or password");
@@ -155,7 +183,7 @@ app.post("/login", (req, res) => {
 app.post("/logout", (req, res) => {
   if (req.cookies.username) {
     res.clearCookie("username");
-    res.clearCookie("id");
+    res.clearCookie("userID");
     req.flash("success", "Successfully logged out!");
     res.redirect("/");
   } else {
@@ -175,7 +203,7 @@ app.post("/register", (req, res) => {
     let id = uuidv4();
     users[id] = { id, email, password };
     res.cookie("username", email);
-    res.cookie("user_id", id);
+    res.cookie("userID", id);
     req.flash("success", "Welcome to TinyApp, you are now registered!");
     res.redirect("/urls");
   } else {
