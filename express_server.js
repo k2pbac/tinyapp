@@ -141,7 +141,7 @@ app.post("/login", (req, res) => {
   if (user) {
     req.flash("success", "You have succesfully logged in!");
     res.cookie("username", email);
-    res.cookie("id", user.id);
+    res.cookie("user_id", user.id);
     res.redirect("/urls");
   } else {
     req.flash("error", "Please enter a valid username and/or password");
@@ -172,6 +172,7 @@ app.post("/register", (req, res) => {
     let id = uuidv4();
     users[id] = { id, email, password };
     res.cookie("username", email);
+    res.cookie("user_id", id);
     req.flash("success", "Welcome to tinyURL, you are now registered!");
     res.redirect("/urls");
   } else {

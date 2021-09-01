@@ -20,13 +20,9 @@
     </div>
     <div>
       <% if (!username ) {%>
-      <!-- <form method="POST" action="/login">
-        <input type="text" name="username" placeholder="Username" />
-        <button type="submit" class="btn btn-outline-dark">Login</button>
-      </form> -->
-      <div>
-        <a class="btn btn-dark mr-2" href="/login">Login</a>
-        <a class="btn btn-dark" href="/register">Register</a>
+      <div class="navbar-nav">
+        <a class="nav-item nav-link mr-2" href="/login">Login</a>
+        <a class="nav-item nav-link" href="/register">Register</a>
       </div>
       <% } else { %>
       <form method="POST" action="/logout">
