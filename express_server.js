@@ -89,8 +89,11 @@ app.post("/urls", (req, res) => {
   if (isLoggedIn(req.cookies.username)) {
     if (longURL !== "") {
       const shortURL = generateRandomString();
-
-      urlDatabase[shortURL] = longURL;
+      urlDatabase[shortURL] = {
+        longURL,
+        userID: req.cookies.userID,
+      };
+      console.log(urlDatabase);
       req.flash("success", "Successfully Inserted a new URL!");
       res.status(200).redirect(`urls/${shortURL}`);
     } else {
@@ -110,6 +113,7 @@ app.get("/urls/:shortURL", (req, res, next) => {
     res.status(200).render("urls_show", {
       shortURL,
       longURL,
+      postID: urlDatabase[shortURL].userID,
     });
   } else {
     next();
@@ -120,7 +124,7 @@ app.get("/urls/:shortURL", (req, res, next) => {
 app.get("/u/:shortURL", (req, res, next) => {
   const { shortURL } = req.params;
   if (Object.prototype.hasOwnProperty.call(urlDatabase, shortURL)) {
-    const longURL = urlDatabase[shortURL];
+    const longURL = urlDatabase[shortURL].longURL;
     res.status(301).redirect(longURL);
   } else {
     next();
@@ -153,7 +157,7 @@ app.post("/urls/:shortURL", (req, res) => {
   const { shortURL } = req.params;
   const { updatedURL } = req.body;
   if (Object.prototype.hasOwnProperty.call(urlDatabase, shortURL)) {
-    urlDatabase[shortURL] = updatedURL;
+    urlDatabase[shortURL].longURL = updatedURL;
     req.flash("success", "Updated url successfully!");
     res.redirect(`/urls/${shortURL}`);
   } else {
