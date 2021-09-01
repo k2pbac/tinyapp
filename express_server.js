@@ -5,6 +5,9 @@ const { generateRandomString } = require("./generateRandomString");
 const flash = require("connect-flash");
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
+const { urlDatabase } = require("./seeds/urlSeeds");
+const { users } = require("./seeds/userSeeds");
+const { v4: uuidv4 } = require("uuid");
 
 app.use(
   express.urlencoded({
@@ -21,11 +24,6 @@ const sessionConfig = {
   secret,
   resave: false,
   saveUninitialized: true,
-  cookie: {
-    httpOnly: true,
-    expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
-    maxAge: 1000 * 60 * 60 * 24 * 7,
-  },
 };
 app.use(flash());
 app.use(session(sessionConfig));
@@ -34,20 +32,9 @@ app.use(session(sessionConfig));
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
-  res.cookie("username", "");
   res.locals.username = req.cookies.username;
-  // if (req.session.username) {
-  //   res.locals.username = req.session.username;
-  // } else {
-  //   res.locals.username = "";
-  // }
   next();
 });
-
-const urlDatabase = {
-  b2xVn2: "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com",
-};
 
 //Get route for home page
 app.get("/", (req, res) => {
@@ -155,18 +142,12 @@ app.post("/login", (req, res) => {
     res.redirect("/urls");
   } else {
     req.flash("success", "You have succesfully logged in!");
-    // req.session.username = username;
     res.cookie("username", username);
     res.redirect("/urls");
   }
 });
 
 app.post("/logout", (req, res) => {
-  // if (req.session.username) {
-  //   req.session.username = "";
-  //   req.flash("success", "Successfully logged out!");
-  //   res.redirect("/");
-  // }
   if (req.cookies.username) {
     res.clearCookie("username");
     req.flash("success", "Successfully logged out!");
@@ -179,6 +160,21 @@ app.post("/logout", (req, res) => {
 
 app.get("/register", (req, res) => {
   res.render("urls_register");
+});
+
+app.post("/register", (req, res) => {
+  const { email, password } = req.body;
+  const values = Object.values(users);
+  if (!values.filter((x) => x["email"] === email).length) {
+    let id = uuidv4();
+    users[id] = { id, email, password };
+    res.cookie("username", email);
+    req.flash("success", "Welcome to tinyURL, you are now registered!");
+    res.redirect("/urls");
+  } else {
+    req.flash("error", "A user with this email already exists.");
+    res.redirect("/register");
+  }
 });
 
 app.get("*", (req, res) => {
