@@ -8,7 +8,7 @@ const cookieParser = require("cookie-parser");
 const { urlDatabase } = require("./seeds/urlSeeds");
 const { users } = require("./seeds/userSeeds");
 const { v4: uuidv4 } = require("uuid");
-
+const { userExists, authenticateUser } = require("./middleware");
 app.use(
   express.urlencoded({
     extended: true,
@@ -137,14 +137,11 @@ app.get("/login", (req, res) => {
 
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
-  const values = Object.values(users);
-
-  if (
-    values.filter((x) => x["email"] === email && x["password"] === password)
-      .length
-  ) {
+  const user = authenticateUser(email, password);
+  if (user) {
     req.flash("success", "You have succesfully logged in!");
     res.cookie("username", email);
+    res.cookie("id", user.id);
     res.redirect("/urls");
   } else {
     req.flash("error", "Please enter a valid username and/or password");
@@ -155,6 +152,7 @@ app.post("/login", (req, res) => {
 app.post("/logout", (req, res) => {
   if (req.cookies.username) {
     res.clearCookie("username");
+    res.clearCookie("id");
     req.flash("success", "Successfully logged out!");
     res.redirect("/");
   } else {
@@ -169,8 +167,8 @@ app.get("/register", (req, res) => {
 
 app.post("/register", (req, res) => {
   const { email, password } = req.body;
-  const values = Object.values(users);
-  if (!values.filter((x) => x["email"] === email).length) {
+
+  if (!userExists(email)) {
     let id = uuidv4();
     users[id] = { id, email, password };
     res.cookie("username", email);
@@ -178,7 +176,7 @@ app.post("/register", (req, res) => {
     res.redirect("/urls");
   } else {
     req.flash("error", "A user with this email already exists.");
-    res.redirect("/register");
+    res.status(400).redirect("/register");
   }
 });
 
