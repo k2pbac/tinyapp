@@ -40,8 +40,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/", userRoutes);
-app.use("/urls", urlRoutes);
 
 app.use((req, res, next) => {
   if (
@@ -72,6 +70,10 @@ app.use((req, res, next) => {
     next();
   }
 });
+
+app.use("/", userRoutes);
+app.use("/urls", urlRoutes);
+
 
 app.all("*", (req, res, next) => {
   next(new ExpressError("Page Not Found", 404));
