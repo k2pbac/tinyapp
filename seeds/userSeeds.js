@@ -12,7 +12,7 @@ const users = {
   aJ48lW: {
     id: "aJ48lW",
     email: "krisbachan123@hotmail.com",
-    password: "$2b$10$A6Yxw.d3plrttllCza/w9Oq.5aYIZn0pxEUhvpIuGWc4vbQmv/M1W",
+    password: "$2b$10$QBGFXNJcxHy4nEHwYcSl9OkrSxARspnn1PUM79B4dhjdvaptYBWKO",
   },
   sfsdfds: {
     id: "sfsdfds",

@@ -19,12 +19,12 @@ router.route("/register")
     if (!userExists(email)) {
       if(password) {
       const hashedPassword = bcrypt.hashSync(password, 10);
-      console.log(password);
+
       console.log(hashedPassword);
       let id = uuidv4();
       users[id] = { id, email, password: hashedPassword };
-      res.cookie("username", email);
-      res.cookie("userID", id);
+      req.session.username = email;
+      req.session.userID = id;
       req.flash("success", "Welcome to TinyApp, you are now registered!");
       return res.status(200).redirect("/urls");
       }
@@ -46,19 +46,18 @@ router.route("/register")
       const user = authenticateUser(email, password);
       if (user) {
         req.flash("success", "You have succesfully logged in!");
-        res.cookie("username", email);
-        res.cookie("userID", user.id);
+        req.session.username = email;
+        req.session.userID = user.id;
         return res.status(200).redirect("/urls");
       } 
         req.flash("error", "Please enter a valid username and/or password");
         return res.status(401).redirect("back");
-      
     });
 
     router.post("/logout", (req, res) => {
-        if (req.cookies.username) {
-          res.clearCookie("username");
-          res.clearCookie("userID");
+        if (req.session.username) {
+          req.session.username = "";
+          req.session.userID = "";
           req.flash("success", "Successfully logged out!");
           return res.status(200).redirect("/login");
         } 

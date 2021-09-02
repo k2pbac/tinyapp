@@ -4,10 +4,9 @@ const morgan = require('morgan')
 const app = express();
 const PORT = 8080; // default port 8080
 const flash = require("connect-flash");
-const session = require("express-session");
 const ExpressError = require("./utils/ExpressError");
-const cookieParser = require("cookie-parser");
-const {urlDatabase} = require("./seeds/urlSeeds")
+const cookieSession = require("cookie-session");
+const {urlDatabase} = require("./seeds/urlSeeds");
 const userRoutes = require("./routes/userRoutes");
 const urlRoutes = require("./routes/urlRoutes");
 const {
@@ -22,26 +21,24 @@ app.use(
     extended: true,
   }) 
 );
-app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys: ['key1','key2'],
+
+  // Cookie Options
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}))
 app.set("view engine", "ejs");
 app.use(express.static("public"));
-//Create a session config and call both flash and session to use methods
-const secret = process.env.SECRET || "thisshouldbeabettersecret!";
-const sessionConfig = {
-  name: "session",
-  secret,
-  resave: false,
-  saveUninitialized: true,
-};
 app.use(flash());
-app.use(session(sessionConfig));
+
 
 //Set locals for success and error to use throughout file
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
-  res.locals.username = req.cookies.username;
-  res.locals.userID = req.cookies.userID;
+  res.locals.username = req.session.username;
+  res.locals.userID = req.session.userID;
   next();
 });
 
@@ -49,25 +46,25 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
   if (
     (req.originalUrl === "/urls" || req.originalUrl === "/") &&
-    !isLoggedIn(req.cookies.username)
+    !isLoggedIn(req.session.username)
   ) {
     req.flash("error", "You must be logged in to view urls");
     return res.redirect("/login");
   } else if (
     req.originalUrl === "/urls/new" &&
-    !isLoggedIn(req.cookies.username)
+    !isLoggedIn(req.session.username)
   ) {
     req.flash("error", "You must be logged in to create a url");
     return res.redirect("/login");
   } else if (
     req.originalUrl.includes("delete") &&
-    !isLoggedIn(req.cookies.username)
+    !isLoggedIn(req.session.username)
   ) {
     req.flash("error", "You must be logged in to delete a url");
     return res.redirect("/login");
   } else if (
     req.originalUrl.includes("edit") &&
-    !isLoggedIn(req.cookies.username)
+    !isLoggedIn(req.session.username)
   ) {
     req.flash("error", "You must be logged in to edit a url");
     return res.redirect("/login");

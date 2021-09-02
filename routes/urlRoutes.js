@@ -10,7 +10,7 @@ const {users} =require("../seeds/userSeeds")
 //Routes for url index and creating a new url
 router.route("/")
 .get((req, res) => {
-    const filteredUrls = urlsForUser(req.cookies.userID);
+    const filteredUrls = urlsForUser(req.session.userID);
     const templateVars = {
       urls: filteredUrls,
     };
@@ -18,12 +18,12 @@ router.route("/")
   })
 .post((req, res) => {
     const { longURL } = req.body;
-    if (isLoggedIn(req.cookies.username)) {
+    if (isLoggedIn(req.session.username)) {
       if (longURL !== "http://") {
         const shortURL = generateRandomString();
         urlDatabase[shortURL] = {
           longURL,
-          userID: req.cookies.userID,
+          userID: req.session.userID,
         };
         req.flash("success", "Successfully Inserted a new URL!");
         return res.status(200).redirect(`urls/${shortURL}`);
@@ -37,7 +37,7 @@ router.route("/")
 
   //New url get route
   router.get("/new", ((req, res) => {
-    return res.render("urls_new", { username: req.cookies.username });
+    return res.render("urls_new", { username: req.session.username });
   }));
 
 
