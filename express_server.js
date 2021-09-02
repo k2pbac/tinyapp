@@ -95,7 +95,7 @@ app.get("/urls/new", (req, res) => {
 app.post("/urls", (req, res) => {
   const { longURL } = req.body;
   if (isLoggedIn(req.cookies.username)) {
-    if (longURL !== "") {
+    if (longURL !== "http://") {
       const shortURL = generateRandomString();
       urlDatabase[shortURL] = {
         longURL,
@@ -163,13 +163,13 @@ app.get("/urls/:shortURL/edit", (req, res) => {
 app.post("/urls/:shortURL", (req, res) => {
   const { shortURL } = req.params;
   const { updatedURL } = req.body;
-  if (Object.prototype.hasOwnProperty.call(urlDatabase, shortURL)) {
+  if (Object.prototype.hasOwnProperty.call(urlDatabase, shortURL) && updatedURL !== "" && (updatedURL.includes("http://") || updatedURL.includes("https://"))) {
     urlDatabase[shortURL].longURL = updatedURL;
     req.flash("success", "Updated url successfully!");
     res.redirect(`/urls/${shortURL}`);
   } else {
-    req.flash("error", "Sorry there is no item with that url to update!");
-    res.redirect("/");
+    req.flash("error", "Sorry the url you entered is empty or incorrect.");
+    res.redirect("back");
   }
 });
 
