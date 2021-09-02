@@ -1,4 +1,6 @@
 const express = require("express");
+const morgan = require('morgan')
+
 const app = express();
 const PORT = 8080; // default port 8080
 const flash = require("connect-flash");
@@ -12,10 +14,13 @@ const {
   isLoggedIn,
 } = require("./middleware");
 
+
+app.use(morgan('dev'));
+
 app.use(
   express.urlencoded({
     extended: true,
-  })
+  }) 
 );
 app.use(cookieParser());
 app.set("view engine", "ejs");

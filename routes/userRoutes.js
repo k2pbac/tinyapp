@@ -30,7 +30,7 @@ router.route("/register")
 
   router.route("/login")
     .get((req, res) => {
-      res.render("urls_login");
+      res.status(200).render("urls_login");
     })
     .post((req, res) => {
       const { email, password } = req.body;
