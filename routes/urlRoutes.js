@@ -5,7 +5,7 @@ const {
   generateRandomString,
   isLoggedIn,
   urlsForUser,
-} = require("../middleware");
+} = require("../helpers");
 const {users} =require("../seeds/userSeeds")
 //Routes for url index and creating a new url
 router.route("/")

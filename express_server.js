@@ -11,7 +11,7 @@ const userRoutes = require("./routes/userRoutes");
 const urlRoutes = require("./routes/urlRoutes");
 const {
   isLoggedIn,
-} = require("./middleware");
+} = require("./helpers");
 
 
 app.use(morgan('dev'));

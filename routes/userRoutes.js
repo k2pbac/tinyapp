@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 const {
   userExists,
   authenticateUser,
-} = require("../middleware");
+} = require("../helpers");
 const { users } = require("../seeds/userSeeds");
 const { v4: uuidv4 } = require("uuid");
 
