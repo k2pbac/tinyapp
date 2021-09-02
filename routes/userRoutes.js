@@ -46,13 +46,12 @@ router.route("/register")
       }
     });
 
-    router.route("/logout")
-      .post((req, res) => {
+    router.post("/logout", (req, res) => {
         if (req.cookies.username) {
           res.clearCookie("username");
           res.clearCookie("userID");
           req.flash("success", "Successfully logged out!");
-          res.status(200).redirect("/urls");
+          res.status(200).redirect("/login");
         } else {
           req.flash("error", "Sorry you are not logged in!");
           res.status(404).render("ursl_login");
