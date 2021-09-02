@@ -1,17 +1,16 @@
-const { users } = require("./seeds/userSeeds");
-const { urlDatabase } = require("./seeds/urlSeeds");
-const values = Object.values(users);
 const bcrypt = require('bcrypt');
 
 
-const userExists = (email) => {
+const userExists = (email, object) => {
+  const values = Object.values(object);
   if (!values.find((x) => x["email"] === email)) {
     return false;
   }
   return true;
 };
 
-const authenticateUser = (email, password) => {
+const authenticateUser = (email, password, object) => {
+  let values = Object.values(object);
   let user = values.find(
     (x) => x["email"] === email && bcrypt.compareSync(password, x["password"])
   );
@@ -28,9 +27,9 @@ const isLoggedIn = (user) => {
   return false;
 };
 
-const urlsForUser = (id) => {
+const urlsForUser = (id, object) => {
   const finalURLs = {};
-  const urls = Object.entries(urlDatabase)
+  const urls = Object.entries(object)
     .filter((x) => x[1].userID === id)
     .map(
       (el) =>

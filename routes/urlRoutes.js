@@ -10,7 +10,7 @@ const {users} =require("../seeds/userSeeds")
 //Routes for url index and creating a new url
 router.route("/")
 .get((req, res) => {
-    const filteredUrls = urlsForUser(req.session.userID);
+    const filteredUrls = urlsForUser(req.session.userID, urlDatabase);
     const templateVars = {
       urls: filteredUrls,
     };

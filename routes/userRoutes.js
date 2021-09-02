@@ -43,7 +43,7 @@ router.route("/register")
     })
     .post((req, res) => {
       const { email, password } = req.body;
-      const user = authenticateUser(email, password);
+      const user = authenticateUser(email, password, users);
       if (user) {
         req.flash("success", "You have succesfully logged in!");
         req.session.username = email;
