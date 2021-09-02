@@ -1,6 +1,8 @@
 const { users } = require("./seeds/userSeeds");
 const { urlDatabase } = require("./seeds/urlSeeds");
 const values = Object.values(users);
+const bcrypt = require('bcrypt');
+
 
 const userExists = (email) => {
   if (!values.find((x) => x["email"] === email)) {
@@ -11,7 +13,7 @@ const userExists = (email) => {
 
 const authenticateUser = (email, password) => {
   let user = values.find(
-    (x) => x["email"] === email && x["password"] === password
+    (x) => x["email"] === email && bcrypt.compareSync(password, x["password"])
   );
   if (user) {
     return user;

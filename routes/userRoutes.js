@@ -1,5 +1,7 @@
 const express = require("express");
 const router = express.Router();
+const bcrypt = require('bcrypt');
+
 const {
   userExists,
   authenticateUser,
@@ -16,8 +18,11 @@ router.route("/register")
   
     if (!userExists(email)) {
       if(password) {
+      const hashedPassword = bcrypt.hashSync(password, 10);
+      console.log(password);
+      console.log(hashedPassword);
       let id = uuidv4();
-      users[id] = { id, email, password };
+      users[id] = { id, email, password: hashedPassword };
       res.cookie("username", email);
       res.cookie("userID", id);
       req.flash("success", "Welcome to TinyApp, you are now registered!");
