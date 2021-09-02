@@ -7,7 +7,7 @@ const flash = require("connect-flash");
 const session = require("express-session");
 const ExpressError = require("./utils/ExpressError");
 const cookieParser = require("cookie-parser");
-
+const {urlDatabase} = require("./seeds/urlSeeds")
 const userRoutes = require("./routes/userRoutes");
 const urlRoutes = require("./routes/urlRoutes");
 const {
@@ -52,33 +52,41 @@ app.use((req, res, next) => {
     !isLoggedIn(req.cookies.username)
   ) {
     req.flash("error", "You must be logged in to view urls");
-    res.redirect("/login");
+    return res.redirect("/login");
   } else if (
     req.originalUrl === "/urls/new" &&
     !isLoggedIn(req.cookies.username)
   ) {
     req.flash("error", "You must be logged in to create a url");
-    res.redirect("/login");
+    return res.redirect("/login");
   } else if (
     req.originalUrl.includes("delete") &&
     !isLoggedIn(req.cookies.username)
   ) {
     req.flash("error", "You must be logged in to delete a url");
-    res.redirect("/login");
+    return res.redirect("/login");
   } else if (
     req.originalUrl.includes("edit") &&
     !isLoggedIn(req.cookies.username)
   ) {
     req.flash("error", "You must be logged in to edit a url");
-    res.redirect("/login");
-  } else {
+    return res.redirect("/login");
+  } 
     next();
-  }
 });
 
 app.use("/", userRoutes);
 app.use("/urls", urlRoutes);
 
+app.get("/u/:shortURL", (req, res, next) => {
+  const { shortURL } = req.params;
+  if (Object.prototype.hasOwnProperty.call(urlDatabase, shortURL)) {
+    const longURL = urlDatabase[shortURL].longURL;
+    return res.status(301).redirect(longURL);
+  } else {
+    next();
+  }
+});
 
 app.all("*", (req, res, next) => {
   next(new ExpressError("Page Not Found", 404));

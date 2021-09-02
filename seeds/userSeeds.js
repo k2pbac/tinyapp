@@ -9,7 +9,7 @@ const users = {
     email: "user2@example.com",
     password: "password",
   },
-  user3RandomID: {
+  aJ48lW: {
     id: "aJ48lW",
     email: "krisbachan123@hotmail.com",
     password: "admin",
