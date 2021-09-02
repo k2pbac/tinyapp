@@ -3,6 +3,7 @@ const app = express();
 const PORT = 8080; // default port 8080
 const flash = require("connect-flash");
 const session = require("express-session");
+const ExpressError = require("./utils/ExpressError");
 const cookieParser = require("cookie-parser");
 const { urlDatabase } = require("./seeds/urlSeeds");
 const { users } = require("./seeds/userSeeds");
@@ -183,10 +184,10 @@ app.post("/login", (req, res) => {
     req.flash("success", "You have succesfully logged in!");
     res.cookie("username", email);
     res.cookie("userID", user.id);
-    res.redirect("/urls");
+    res.status(200).redirect("/urls");
   } else {
     req.flash("error", "Please enter a valid username and/or password");
-    res.redirect("back");
+    res.status(401).render("urls_login");
   }
 });
 
@@ -195,10 +196,10 @@ app.post("/logout", (req, res) => {
     res.clearCookie("username");
     res.clearCookie("userID");
     req.flash("success", "Successfully logged out!");
-    res.redirect("/");
+    res.status(200).redirect("/");
   } else {
     req.flash("error", "Sorry you are not logged in!");
-    res.redirect("/");
+    res.status(404).render("ursl_login");
   }
 });
 
@@ -222,9 +223,14 @@ app.post("/register", (req, res) => {
   }
 });
 
-app.get("*", (req, res) => {
-  req.flash("error", "Sorry, page was not found!");
-  res.status(404).redirect("/");
+app.all("*", (req, res, next) => {
+  next(new ExpressError("Page Not Found", 404));
+});
+
+app.use((err, req, res, next) => {
+  const { statusCode = 500 } = err;
+  if (!err.message) err.message = "Oh No, Something Went Wrong!";
+  res.status(statusCode).render("error", { err });
 });
 
 app.listen(PORT, () => {
