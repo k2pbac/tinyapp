@@ -11,6 +11,7 @@ const {users} =require("../seeds/userSeeds")
 router.route("/")
 .get((req, res) => {
     const filteredUrls = urlsForUser(req.session.userID, urlDatabase);
+    console.log(filteredUrls);
     const templateVars = {
       urls: filteredUrls,
     };
@@ -26,10 +27,10 @@ router.route("/")
           userID: req.session.userID,
         };
         req.flash("success", "Successfully Inserted a new URL!");
-        return res.status(200).redirect(`urls/${shortURL}`);
-      }
+        res.redirect(`urls/${shortURL}`);
+      } 
       req.flash("error", "Incorrect or empty URL, nothing created!");
-       return res.status(400).redirect("urls/new");
+       return res.redirect("urls/new", {message:req.session.messages});
     }
      return res.redirect("/login");
     
@@ -87,7 +88,7 @@ router.get("/:shortURL/edit", (req, res) => {
     return res.redirect(`/urls/${shortURL}`);
   }
     req.flash("error", "Sorry that URL doesn't exist!");
-    return res.status(404).redirect("/urls");
+    return res.redirect("/urls");
 });
 
 

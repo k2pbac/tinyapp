@@ -16,7 +16,8 @@ router.route("/register")
   .post((req, res) => {
     const { email, password } = req.body;
   
-    if (!userExists(email)) {
+    if(email) {
+    if (!userExists(email, users)) {
       if(password) {
       const hashedPassword = bcrypt.hashSync(password, 10);
 
@@ -28,12 +29,14 @@ router.route("/register")
       req.flash("success", "Welcome to TinyApp, you are now registered!");
       return res.status(200).redirect("/urls");
       }
-      req.flash("error", "Please enter a correct password!");
-      return res.status(401).redirect("back");
+      req.flash("error", "Fields can't be empty");
+      return res.status(401).redirect("/register");
     } 
     req.flash("error", "A user with this email already exists.");
     return res.status(400).redirect("/register");
-    
+  }
+  req.flash("error", "Fields can't be empty")
+  return res.status(400).redirect("/register");
   });
 
 
@@ -56,8 +59,8 @@ router.route("/register")
 
     router.post("/logout", (req, res) => {
         if (req.session.username) {
-          req.session.username = "";
-          req.session.userID = "";
+          req.session.username = null;
+          req.session.userID = null;
           req.flash("success", "Successfully logged out!");
           return res.status(200).redirect("/login");
         } 

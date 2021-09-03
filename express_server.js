@@ -12,6 +12,7 @@ const urlRoutes = require("./routes/urlRoutes");
 const {
   isLoggedIn,
 } = require("./helpers");
+const e = require("connect-flash");
 
 
 app.use(morgan('dev'));
@@ -26,7 +27,7 @@ app.use(cookieSession({
   keys: ['key1','key2'],
 
   // Cookie Options
-  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  maxAge: 12 * 60 * 60 * 1000 // 24 hours
 }))
 app.set("view engine", "ejs");
 app.use(express.static("public"));
@@ -69,11 +70,20 @@ app.use((req, res, next) => {
     req.flash("error", "You must be logged in to edit a url");
     return res.redirect("/login");
   } 
+  else if( (req.originalUrl.includes("login") || req.originalUrl.includes("register"))&& isLoggedIn(req.session.username)) {
+    return res.redirect("/urls");
+  }
     next();
 });
 
 app.use("/", userRoutes);
 app.use("/urls", urlRoutes);
+
+
+app.get("/", (req, res) => {
+  res.redirect("/urls");
+});
+
 
 app.get("/u/:shortURL", (req, res, next) => {
   const { shortURL } = req.params;
