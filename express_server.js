@@ -14,7 +14,6 @@ const urlRoutes = require("./routes/urlRoutes");
 const {
   isLoggedIn,
 } = require("./helpers");
-const e = require("connect-flash");
 
 app.use(methodOverride('_method'));
 app.use(morgan('dev'));
@@ -42,10 +41,11 @@ app.use((req, res, next) => {
   res.locals.error = req.flash("error");
   res.locals.username = req.session.username;
   res.locals.userID = req.session.userID;
+  res.locals.numVisits = req.session.numVisits;
   next();
 });
 
-
+//Middleware for user authorization to the different url paths
 app.use((req, res, next) => {
   if (
     (req.originalUrl === "/urls" || req.originalUrl === "/") &&
@@ -86,17 +86,19 @@ app.get("/", (req, res) => {
   res.redirect("/urls");
 });
 
-
+//Get request to a external url based on the longURL provided
 app.get("/u/:shortURL", (req, res, next) => {
   const { shortURL } = req.params;
   if (Object.prototype.hasOwnProperty.call(urlDatabase, shortURL)) {
     const longURL = urlDatabase[shortURL].longURL;
+    req.session.numVisits += 1;
     return res.status(301).redirect(longURL);
   } else {
     next();
   }
 });
 
+//On any pages that are not found an error will throw and redirect to the error template
 app.all("*", (req, res, next) => {
   next(new ExpressError("Page Not Found", 404));
 });

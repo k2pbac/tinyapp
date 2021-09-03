@@ -7,6 +7,7 @@ const {
   urlsForUser,
 } = require("../helpers");
 const {users} =require("../seeds/userSeeds")
+
 //Routes for url index and creating a new url
 router.route("/")
 .get((req, res) => {
@@ -70,7 +71,7 @@ router.route("/")
 
   });
 
-
+//Route to delete a url based on the shortURL 
 router.delete("/:shortURL", (req, res) => {
   const { shortURL } = req.params;
   if (Object.prototype.hasOwnProperty.call(urlDatabase, shortURL)) {
@@ -82,6 +83,7 @@ router.delete("/:shortURL", (req, res) => {
     return res.redirect("/urls");
 });
 
+//Route to view the edit page
 router.get("/:shortURL/edit", (req, res) => {
   const { shortURL } = req.params;
   if (Object.prototype.hasOwnProperty.call(urlDatabase, shortURL)) {

@@ -9,6 +9,8 @@ const {
 const { users } = require("../seeds/userSeeds");
 const { v4: uuidv4 } = require("uuid");
 
+
+//Get and post URL to view and complete a register
 router.route("/register")
   .get((req, res) => {
     return res.render("urls_register");
@@ -40,6 +42,7 @@ router.route("/register")
   });
 
 
+  //Login Post and Get routes to view and complete a login
   router.route("/login")
     .get((req, res) => {
      return res.status(200).render("urls_login");
@@ -57,6 +60,7 @@ router.route("/register")
         return res.status(401).redirect("back");
     });
 
+    //Post route to logout user
     router.post("/logout", (req, res) => {
         if (req.session.username) {
           req.session.username = null;
