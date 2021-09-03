@@ -15,7 +15,10 @@
       crossorigin="anonymous"
     />
     <link rel="shortcut icon" type="image/jpg" href="images/Tiny.png"/>
-  
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400&display=swap" rel="stylesheet">
+    
     <title>TinyApp</title>
   </head>
   <body>
@@ -47,7 +50,7 @@
           </div>
           <% } else { %>
           <form method="POST" action="/logout">
-            <h5 class="d-inline pr-2">Logged in as: <%= username %></h5>
+            <h5 style="font-family: 'Lato', sans-serif;" class="d-inline pr-2">Logged in as: <%= username %></h5>
             <button type="submit" class="btn btn-outline-dark">Logout</button>
           </form>
           <% } %>
