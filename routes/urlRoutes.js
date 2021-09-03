@@ -57,7 +57,7 @@ router.route("/")
       next();
     }
   })
-  .post((req, res) => {
+  .put((req, res) => {
     const { shortURL } = req.params;
     const { updatedURL } = req.body;
     if (Object.prototype.hasOwnProperty.call(urlDatabase, shortURL) && updatedURL !== "" && (updatedURL.includes("http://") || updatedURL.includes("https://"))) {
@@ -71,7 +71,7 @@ router.route("/")
   });
 
 
-router.post("/:shortURL/delete", (req, res) => {
+router.delete("/:shortURL", (req, res) => {
   const { shortURL } = req.params;
   if (Object.prototype.hasOwnProperty.call(urlDatabase, shortURL)) {
     delete urlDatabase[shortURL];

@@ -7,6 +7,8 @@ const flash = require("connect-flash");
 const ExpressError = require("./utils/ExpressError");
 const cookieSession = require("cookie-session");
 const {urlDatabase} = require("./seeds/urlSeeds");
+const methodOverride = require('method-override')
+
 const userRoutes = require("./routes/userRoutes");
 const urlRoutes = require("./routes/urlRoutes");
 const {
@@ -14,7 +16,7 @@ const {
 } = require("./helpers");
 const e = require("connect-flash");
 
-
+app.use(methodOverride('_method'));
 app.use(morgan('dev'));
 
 app.use(

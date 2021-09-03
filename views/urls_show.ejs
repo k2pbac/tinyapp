@@ -10,7 +10,7 @@
   <% if (username && postID === userID) { %>
   <div class="card-footer text-muted">
     <h2>Edit</h2>
-    <form method="POST" action="/urls/<%= shortURL %>">
+    <form method="POST" action="/urls/<%= shortURL %>?_method=PUT">
       <label for="">New URL:</label>
       <input
         name="updatedURL"
