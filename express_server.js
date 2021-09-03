@@ -42,6 +42,7 @@ app.use((req, res, next) => {
   res.locals.username = req.session.username;
   res.locals.userID = req.session.userID;
   res.locals.numVisits = req.session.numVisits;
+  res.locals.uniqueVisits = req.session.uniqueVisits;
   next();
 });
 
@@ -92,6 +93,14 @@ app.get("/u/:shortURL", (req, res, next) => {
   if (Object.prototype.hasOwnProperty.call(urlDatabase, shortURL)) {
     const longURL = urlDatabase[shortURL].longURL;
     req.session.numVisits += 1;
+    if(req.session.uniqueVisitors && !req.session.uniqueVisitors.includes(req.session.userID)){
+      req.session.uniqueVisits += 1;
+      req.session.uniqueVisitors.push(req.session.userID);
+    }
+    else{
+      req.session.uniqueVisits = 1;
+      req.session.uniqueVisitors = [req.session.userID];
+    }
     return res.status(301).redirect(longURL);
   } else {
     next();

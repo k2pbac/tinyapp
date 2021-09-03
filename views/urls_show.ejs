@@ -6,6 +6,7 @@
     <p class="card-text">
       Short URL: <a href="/u/<%= shortURL %>"><%= shortURL %></a>
       Visited: <% if (!numVisits) { %>0 <% } else { %> <%= numVisits  %> <% } %>  times
+      Unique Visitors: <% if (!uniqueVisits) { %>0 <% } else { %> <%= uniqueVisits %><% } %>  times   
     </p>
   </div>
   <% if (username && postID === userID) { %>
